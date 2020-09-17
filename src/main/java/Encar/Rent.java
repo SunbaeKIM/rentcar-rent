@@ -24,9 +24,9 @@ public class Rent {
         String checkQuantity = RentApplication.applicationContext.getBean(Encar.external.CarService.class).checkCarQuantity(this.getCarId().toString());
 
         if(Integer.parseInt(checkQuantity) > 0){
-            this.setStatus("예약신청");
+            this.setStatus("RentRequest");
         }else{
-            this.setStatus("예약불가");
+            this.setStatus("RentDisapproval");
         }
     }
     /**
@@ -36,14 +36,14 @@ public class Rent {
     public void onPostPersist(){
         RentRequested rentRequested = new RentRequested();
         BeanUtils.copyProperties(this, rentRequested);
-        if("예약신청".equals(this.getStatus())) rentRequested.publishAfterCommit();
+        if("RentRequest".equals(this.getStatus())) rentRequested.publishAfterCommit();
     }
     /**
      * 예약취소 이 후 상품재고 원복 및 배정정보 삭제 이벤트 전달
      * */
     @PostUpdate
     public  void onPostUpdate(){
-        if("예약취소".equals(this.getStatus())){
+        if("RentCancel".equals(this.getStatus())){
             RentCancelRequested rentCancelRequested = new RentCancelRequested();
             BeanUtils.copyProperties(this, rentCancelRequested);
             rentCancelRequested.publishAfterCommit();
